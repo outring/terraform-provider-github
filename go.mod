@@ -74,3 +74,5 @@ require (
 	google.golang.org/grpc v1.79.3 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
+
+replace github.com/google/go-github/v88 => github.com/outring/go-github/v88 v88.0.1-0.20261020144359-eb80e9047290
