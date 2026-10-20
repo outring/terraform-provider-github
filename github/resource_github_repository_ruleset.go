@@ -217,6 +217,12 @@ func resourceGithubRepositoryRuleset() *schema.Resource {
 										Default:     false,
 										Description: "Require an approving review in pull requests that modify files that have a designated code owner. Defaults to `false`.",
 									},
+									"require_extra_approval_for_unattributed_changes": {
+										Type:        schema.TypeBool,
+										Optional:    true,
+										Default:     true,
+										Description: "Require one more approval for pull requests that Copilot opens under its own app identity, not attributed to a person. Has no effect when no approvals are required. Defaults to `true`.",
+									},
 									"require_last_push_approval": {
 										Type:        schema.TypeBool,
 										Optional:    true,

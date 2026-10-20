@@ -103,11 +103,12 @@ resource "github_organization_ruleset" "test" {
 		required_signatures = false
 
 		pull_request {
-			required_approving_review_count   = 2
-			required_review_thread_resolution = true
-			require_code_owner_review         = true
-			dismiss_stale_reviews_on_push     = true
-			require_last_push_approval        = true
+			required_approving_review_count                 = 2
+			required_review_thread_resolution               = true
+			require_code_owner_review                       = true
+			dismiss_stale_reviews_on_push                   = true
+			require_extra_approval_for_unattributed_changes = false
+			require_last_push_approval                      = true
 		}
 
 		copilot_code_review {
@@ -173,6 +174,7 @@ resource "github_organization_ruleset" "test" {
 						resource.TestCheckResourceAttr("github_organization_ruleset.test", "bypass_actors.2.actor_type", "OrganizationAdmin"),
 						resource.TestCheckResourceAttr("github_organization_ruleset.test", "bypass_actors.2.bypass_mode", "always"),
 						resource.TestCheckResourceAttr("github_organization_ruleset.test", "rules.0.pull_request.0.allowed_merge_methods.#", "3"),
+						resource.TestCheckResourceAttr("github_organization_ruleset.test", "rules.0.pull_request.0.require_extra_approval_for_unattributed_changes", "false"),
 						resource.TestCheckResourceAttr("github_organization_ruleset.test", "rules.0.required_workflows.0.do_not_enforce_on_create", "true"),
 						resource.TestCheckResourceAttr("github_organization_ruleset.test", "rules.0.required_workflows.0.required_workflow.0.path", workflowFilePath),
 						resource.TestCheckResourceAttr("github_organization_ruleset.test", "rules.0.required_code_scanning.0.required_code_scanning_tool.0.alerts_threshold", "errors"),

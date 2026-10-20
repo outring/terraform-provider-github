@@ -438,12 +438,13 @@ func expandRules(input []any, org bool) *github.RepositoryRulesetRules {
 		allowedMergeMethods := pullRequestMap["allowed_merge_methods"]
 
 		params := &github.PullRequestRuleParameters{
-			DismissStaleReviewsOnPush:      pullRequestMap["dismiss_stale_reviews_on_push"].(bool),
-			RequireCodeOwnerReview:         pullRequestMap["require_code_owner_review"].(bool),
-			RequireLastPushApproval:        pullRequestMap["require_last_push_approval"].(bool),
-			RequiredApprovingReviewCount:   toInt(pullRequestMap["required_approving_review_count"]),
-			RequiredReviewThreadResolution: pullRequestMap["required_review_thread_resolution"].(bool),
-			AllowedMergeMethods:            toPullRequestMergeMethods(allowedMergeMethods),
+			DismissStaleReviewsOnPush:                  pullRequestMap["dismiss_stale_reviews_on_push"].(bool),
+			RequireCodeOwnerReview:                     pullRequestMap["require_code_owner_review"].(bool),
+			RequireExtraApprovalForUnattributedChanges: pullRequestMap["require_extra_approval_for_unattributed_changes"].(bool),
+			RequireLastPushApproval:                    pullRequestMap["require_last_push_approval"].(bool),
+			RequiredApprovingReviewCount:               toInt(pullRequestMap["required_approving_review_count"]),
+			RequiredReviewThreadResolution:             pullRequestMap["required_review_thread_resolution"].(bool),
+			AllowedMergeMethods:                        toPullRequestMergeMethods(allowedMergeMethods),
 		}
 
 		// Add required reviewers if provided
@@ -695,13 +696,14 @@ func flattenRules(ctx context.Context, rules *github.RepositoryRulesetRules, org
 	if rules.PullRequest != nil {
 		pullRequestSlice := make([]map[string]any, 0)
 		pullRequestSlice = append(pullRequestSlice, map[string]any{
-			"dismiss_stale_reviews_on_push":     rules.PullRequest.DismissStaleReviewsOnPush,
-			"require_code_owner_review":         rules.PullRequest.RequireCodeOwnerReview,
-			"require_last_push_approval":        rules.PullRequest.RequireLastPushApproval,
-			"required_approving_review_count":   rules.PullRequest.RequiredApprovingReviewCount,
-			"required_review_thread_resolution": rules.PullRequest.RequiredReviewThreadResolution,
-			"allowed_merge_methods":             rules.PullRequest.AllowedMergeMethods,
-			"required_reviewers":                flattenRequiredReviewers(rules.PullRequest.RequiredReviewers),
+			"dismiss_stale_reviews_on_push":                   rules.PullRequest.DismissStaleReviewsOnPush,
+			"require_code_owner_review":                       rules.PullRequest.RequireCodeOwnerReview,
+			"require_extra_approval_for_unattributed_changes": rules.PullRequest.RequireExtraApprovalForUnattributedChanges,
+			"require_last_push_approval":                      rules.PullRequest.RequireLastPushApproval,
+			"required_approving_review_count":                 rules.PullRequest.RequiredApprovingReviewCount,
+			"required_review_thread_resolution":               rules.PullRequest.RequiredReviewThreadResolution,
+			"allowed_merge_methods":                           rules.PullRequest.AllowedMergeMethods,
+			"required_reviewers":                              flattenRequiredReviewers(rules.PullRequest.RequiredReviewers),
 		})
 		tflog.Debug(ctx, "Flattened Pull Request rules slice", map[string]any{"pull_request": pullRequestSlice})
 		rulesMap["pull_request"] = pullRequestSlice

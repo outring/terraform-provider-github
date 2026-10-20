@@ -1365,3 +1365,46 @@ func TestFlattenRulesetRepositoryPropertyTargetParameters_NilPropertyValues(t *t
 		}
 	}
 }
+
+func TestPullRequestRuleRequireExtraApprovalForUnattributedChangesRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	for _, value := range []bool{true, false} {
+		input := []any{map[string]any{
+			"pull_request": []any{
+				map[string]any{
+					"allowed_merge_methods":                           []any{"merge"},
+					"dismiss_stale_reviews_on_push":                   false,
+					"require_code_owner_review":                       false,
+					"require_extra_approval_for_unattributed_changes": value,
+					"require_last_push_approval":                      false,
+					"required_approving_review_count":                 1,
+					"required_review_thread_resolution":               false,
+				},
+			},
+		}}
+
+		expanded := expandRules(input, false)
+		if expanded == nil || expanded.PullRequest == nil {
+			t.Fatal("Expected PullRequest rule to be set")
+		}
+
+		if expanded.PullRequest.RequireExtraApprovalForUnattributedChanges != value {
+			t.Errorf("Expected RequireExtraApprovalForUnattributedChanges to be %v, got %v", value, expanded.PullRequest.RequireExtraApprovalForUnattributedChanges)
+		}
+
+		flattened := flattenRules(t.Context(), expanded, false)
+		if len(flattened) != 1 {
+			t.Fatalf("Expected 1 flattened result, got %d", len(flattened))
+		}
+
+		pullRequests := flattened[0].(map[string]any)["pull_request"].([]map[string]any)
+		if len(pullRequests) != 1 {
+			t.Fatalf("Expected 1 pull_request rule after round trip, got %d", len(pullRequests))
+		}
+
+		if pullRequests[0]["require_extra_approval_for_unattributed_changes"] != value {
+			t.Errorf("Expected require_extra_approval_for_unattributed_changes to be %v, got %v", value, pullRequests[0]["require_extra_approval_for_unattributed_changes"])
+		}
+	}
+}

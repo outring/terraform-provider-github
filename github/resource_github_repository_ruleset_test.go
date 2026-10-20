@@ -95,12 +95,13 @@ resource "github_repository_ruleset" "test" {
 		required_signatures = false
 
 		pull_request {
-			allowed_merge_methods             = ["merge", "squash"]
-			required_approving_review_count   = 2
-			required_review_thread_resolution = true
-			require_code_owner_review         = true
-			dismiss_stale_reviews_on_push     = true
-			require_last_push_approval        = true
+			allowed_merge_methods                           = ["merge", "squash"]
+			required_approving_review_count                 = 2
+			required_review_thread_resolution               = true
+			require_code_owner_review                       = true
+			dismiss_stale_reviews_on_push                   = true
+			require_extra_approval_for_unattributed_changes = false
+			require_last_push_approval                      = true
 		}
 
 		required_status_checks {
@@ -143,6 +144,7 @@ resource "github_repository_ruleset" "test" {
 						resource.TestCheckResourceAttr("github_repository_ruleset.test", "bypass_actors.1.actor_type", "RepositoryRole"),
 						resource.TestCheckResourceAttr("github_repository_ruleset.test", "bypass_actors.1.bypass_mode", "always"),
 						resource.TestCheckResourceAttr("github_repository_ruleset.test", "rules.0.pull_request.0.allowed_merge_methods.#", "2"),
+						resource.TestCheckResourceAttr("github_repository_ruleset.test", "rules.0.pull_request.0.require_extra_approval_for_unattributed_changes", "false"),
 						resource.TestCheckResourceAttr("github_repository_ruleset.test", "rules.0.required_code_scanning.0.required_code_scanning_tool.0.alerts_threshold", "errors"),
 						resource.TestCheckResourceAttr("github_repository_ruleset.test", "rules.0.required_code_scanning.0.required_code_scanning_tool.0.security_alerts_threshold", "high_or_higher"),
 						resource.TestCheckResourceAttr("github_repository_ruleset.test", "rules.0.required_code_scanning.0.required_code_scanning_tool.0.tool", "CodeQL"),
